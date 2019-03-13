@@ -1,30 +1,30 @@
+from __future__ import print_function
 import argparse
 import base64
 from datetime import datetime
 import os
-import shutil
 
 import numpy as np
 import socketio
 import eventlet
 import eventlet.wsgi
-from PIL import Image
 from flask import Flask
-from io import BytesIO
+import cv2 as cv
 
-from keras.models import load_model
-
-import utils
+from tensorflow.keras.models import load_model
 
 sio = socketio.Server()
 app = Flask(__name__)
 model = None
 prev_image_array = None
 
-MAX_SPEED = 25
-MIN_SPEED = 10
+MAX_SPEED = 25.
+MIN_SPEED = 10.
 
 speed_limit = MAX_SPEED
+
+cvwindow = 'center_camera'
+cv.namedWindow(cvwindow, cv.WINDOW_AUTOSIZE)
 
 @sio.on('telemetry')
 def telemetry(sid, data):
@@ -36,31 +36,36 @@ def telemetry(sid, data):
         # The current speed of the car
         speed = float(data["speed"])
         # The current image from the center camera of the car
-        image = Image.open(BytesIO(base64.b64decode(data["image"])))
+        nparr = np.fromstring(base64.b64decode(data["image"]), np.uint8)
+        image = cv.imdecode(nparr, cv.IMREAD_COLOR)
+        cv.imshow(cvwindow, image)
+        cv.waitKey(1)
+
+        send_control(0, 8)
+
         # save frame
         if args.image_folder != '':
             timestamp = datetime.utcnow().strftime('%Y_%m_%d_%H_%M_%S_%f')[:-3]
-            image_filename = os.path.join(args.image_folder, timestamp)
-            image.save('{}.jpg'.format(image_filename))
-            
+            image_filename = "{}.jpg".format(os.path.join(args.image_folder, timestamp))
+            cv.imwrite(image_filename, image) 
+        return    
         try:
-            image = np.asarray(image)       # from PIL image to numpy array
             image = utils.preprocess(image) # apply the preprocessing
             image = np.array([image])       # the model expects 4D array
 
             # predict the steering angle for the image
             steering_angle = float(model.predict(image, batch_size=1))
-            # lower the throttle as the speed increases
-            # if the speed is above the current speed limit, we are on a downhill.
-            # make sure we slow down first and then go back to the original max speed.
+            # If the current speed is above speed_limit, we are probably driving downhill.
+            #  - in this case, lower the throttle until the speed decreases
             global speed_limit
             if speed > speed_limit:
                 speed_limit = MIN_SPEED  # slow down
             else:
                 speed_limit = MAX_SPEED
             throttle = 1.0 - steering_angle**2 - (speed/speed_limit)**2
+            # OPTIONAL TODO: change this if you implement throttle prediction
 
-            print('{} {} {}'.format(steering_angle, throttle, speed))
+            print('steering angle: {} throttle: {} speed: {}'.format(steering_angle, throttle, speed))
             send_control(steering_angle, throttle)
         except Exception as e:
             print(e)
@@ -105,15 +110,12 @@ if __name__ == '__main__':
     model = load_model(args.model)
 
     if args.image_folder != '':
-        print("Creating image folder at {}".format(args.image_folder))
         if not os.path.exists(args.image_folder):
+            print("Creating image folder at {}".format(args.image_folder))
             os.makedirs(args.image_folder)
-        else:
-            shutil.rmtree(args.image_folder)
-            os.makedirs(args.image_folder)
-        print("RECORDING THIS RUN ...")
+        print("[Recording this run!]")
     else:
-        print("NOT RECORDING THIS RUN ...")
+        print("[Not recording this run]")
 
     # wrap Flask application with engineio's middleware
     app = socketio.Middleware(sio, app)
