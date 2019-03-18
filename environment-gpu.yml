@@ -6,7 +6,9 @@ dependencies:
     - jupyter
     - h5py
     - flask-socketio
+    - scikit-learn
     - tensorflow-gpu
+    - keras
     - pip:
         - eventlet
         - opencv-python
