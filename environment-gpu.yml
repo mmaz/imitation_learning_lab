@@ -1,6 +1,6 @@
 name: imitation_learning
 dependencies:
-    - python=2.7
+    - python=3.6
     - numpy
     - matplotlib
     - jupyter
@@ -8,7 +8,7 @@ dependencies:
     - flask-socketio
     - scikit-learn
     - tensorflow-gpu
-    - keras
+    #- keras
     - pip:
         - eventlet
         - opencv-python
