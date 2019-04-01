@@ -23,3 +23,5 @@ if __name__ == "__main__":
         command.drive.steering_angle = ngl
         command.drive.speed = 4000
         commandPub.publish(command)
+	if rospy.is_shutdown()
+            break

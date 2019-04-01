@@ -9,11 +9,10 @@ import datetime
 from collections import deque
 
 import tensorflow as tf
-from keras.models import load_model
-from keras.backend.tensorflow_backend import set_session
+from tensorflow.keras.models import load_model
 config = tf.ConfigProto()
 config.gpu_options.per_process_gpu_memory_fraction = 0.25 
-set_session(tf.Session(config=config))
+sess = tf.InteractiveSession(config=config)
 
 SAVE_RUN = False
 CENTER_CAMERA_VIDEO_ID = 1 # /dev/video*
@@ -71,6 +70,4 @@ if __name__ == "__main__":
             with open(csv_fn, 'a') as fh:
               line = "{},{}\n".format(img_fn, ngl)
               fh.write(line)
-        if rospy.is_shutdown():
-            cap.release()
-            cv.destroyAllWindows()
+
