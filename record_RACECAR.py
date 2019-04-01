@@ -11,8 +11,8 @@ speed = None
 
 # dev/video*
 LEFT   = 2
-CENTER = 3
-RIGHT  = 1
+CENTER = 1
+RIGHT  = 0
 
 def joycb(msg):
     global ngl
@@ -55,7 +55,7 @@ def main():
         ret_l, frame_l = cap_l.read()
         ret_c, frame_m = cap_c.read()
         ret_r, frame_r = cap_r.read()
-        frames = np.hstack((frame_l, frame_m, frame_r))
+        frames = np.hstack([frame_l, frame_m, frame_r])
 
         now = datetime.datetime.now()
         img_fn = "{}.jpg".format(now.strftime('%m_%d_%H_%M_%S_%f')[:-3])
