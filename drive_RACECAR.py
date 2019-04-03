@@ -12,8 +12,9 @@ if __name__ == "__main__":
 
     port = "5556"
     context = zmq.Context()
-    socket = context.socket(zmq.SUB)
-    socket.setsockopt(zmq.CONFLATE, 1)
+    socket = context.socket(zmq.SUB)     # subscriber socket
+    socket.setsockopt(zmq.CONFLATE, 1)   # only receive the latest message 
+    socket.setsockopt(zmq.SUBSCRIBE, '') # no message filter
     socket.connect("tcp://127.0.0.1:%s" % port)
 
     while True:
