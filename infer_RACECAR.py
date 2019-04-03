@@ -17,6 +17,7 @@ sess = tf.InteractiveSession(config=config)
 SAVE_RUN = False
 CENTER_CAMERA_VIDEO_ID = 1 # /dev/video*
 USE_FILTER = False
+USE_FULL_FRAME = True
 
 angle_filter = deque(maxlen=5)
 
@@ -31,6 +32,9 @@ def pilotnet_crop(image):
     # columns: (320 - 200) /2 == 60 
     return image[87:-87, 60:-60] 
 
+def shrink(image):
+    return cv.resize(image, (200,66), cv.INTER_AREA)
+
 if __name__ == "__main__":
     port = "5556"
     context = zmq.Context()
@@ -44,7 +48,7 @@ if __name__ == "__main__":
     
     if SAVE_RUN:
         start = datetime.datetime.now()
-        data_folder = "run_{}".format(start.strftime("%m_%d_%H_%M"))
+        data_folder = "results_{}".format(start.strftime("%m_%d_%H_%M"))
         os.mkdir(data_folder)
         os.chdir(data_folder)
 
@@ -53,7 +57,10 @@ if __name__ == "__main__":
     while True:
         ret, image = cap.read()
 
-        crop = pilotnet_crop(image)
+        if USE_FULL_FRAME:
+            crop = shrink(image)
+        else:
+            crop = pilotnet_crop(image)
         crop = np.array([crop])
         with graph.as_default():
             ngl = model.predict(crop, batch_size=1)[0,0]
