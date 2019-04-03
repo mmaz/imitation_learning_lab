@@ -16,6 +16,7 @@ sess = tf.InteractiveSession(config=config)
 
 SAVE_RUN = False
 CENTER_CAMERA_VIDEO_ID = 1 # /dev/video*
+USE_FILTER = False
 
 angle_filter = deque(maxlen=5)
 
@@ -57,9 +58,10 @@ if __name__ == "__main__":
         with graph.as_default():
             ngl = model.predict(crop, batch_size=1)[0,0]
 
-        angle_filter.append(ngl)
-        # TODO: try a median filter, removing the filter, etc
-        ngl = np.mean(angle_filter)
+        if USE_FILTER:
+            angle_filter.append(ngl)
+            # TODO: try a median filter, removing the filter, etc
+            ngl = np.mean(angle_filter)
         print(ngl)
         socket.send_string("{}".format(ngl))
 
