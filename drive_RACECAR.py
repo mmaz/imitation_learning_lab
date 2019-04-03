@@ -12,16 +12,23 @@ if __name__ == "__main__":
 
     port = "5556"
     context = zmq.Context()
-    socket = context.socket(zmq.PAIR)
-    socket.bind("tcp://*:%s" % port)
+    socket = context.socket(zmq.SUB)
+    socket.setsockopt(zmq.CONFLATE, 1)
+    socket.connect("tcp://127.0.0.1:%s" % port)
 
     while True:
-        msg = socket.recv()
+        try:
+            msg = socket.recv()
+        except KeyboardInterrupt:
+            break
         ngl = float(msg)
         print(ngl)
         command = AckermannDriveStamped()
         command.drive.steering_angle = ngl
         command.drive.speed = 4000
         commandPub.publish(command)
-	if rospy.is_shutdown()
+        if rospy.is_shutdown()
             break
+    #cleanup zmq
+    socket.close()
+    context.term()

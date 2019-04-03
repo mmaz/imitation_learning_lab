@@ -33,8 +33,8 @@ def pilotnet_crop(image):
 if __name__ == "__main__":
     port = "5556"
     context = zmq.Context()
-    socket = context.socket(zmq.PAIR)
-    socket.connect("tcp://127.0.0.1:%s" % port)
+    socket = context.socket(zmq.PUB)
+    socket.bind("tcp://*:%s" % port)
 
     cap = cv.VideoCapture(CENTER_CAMERA_VIDEO_ID)
     cap.set(cv.CAP_PROP_FRAME_WIDTH, 320)
