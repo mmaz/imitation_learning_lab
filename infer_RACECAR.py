@@ -7,6 +7,7 @@ import random
 import zmq
 import datetime
 from collections import deque
+import cameras_RACECAR as dev
 
 import tensorflow as tf
 from tensorflow.keras.models import load_model
@@ -15,7 +16,6 @@ config.gpu_options.per_process_gpu_memory_fraction = 0.25
 sess = tf.InteractiveSession(config=config)
 
 SAVE_RUN = False
-CENTER_CAMERA_VIDEO_ID = 1 # /dev/video*
 USE_FILTER = False
 USE_FULL_FRAME = True
 
@@ -42,7 +42,8 @@ if __name__ == "__main__":
     socket.setsockopt(zmq.SNDHWM, 1)  #  "send highwatermark" - do not queue up messages
     socket.bind("tcp://*:%s" % port)  
 
-    cap = cv.VideoCapture(CENTER_CAMERA_VIDEO_ID)
+    print(":::: USING /dev/video{} AS CENTER CAMERA ::::")
+    cap = cv.VideoCapture(dev.Video.CENTER)
     cap.set(cv.CAP_PROP_FRAME_WIDTH, 320)
     cap.set(cv.CAP_PROP_FRAME_HEIGHT, 240)
     

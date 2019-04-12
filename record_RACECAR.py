@@ -5,14 +5,10 @@ import numpy as np
 from ackermann_msgs.msg import AckermannDriveStamped
 import os
 import datetime
+import cameras_RACECAR as dev
 
 ngl = None
 speed = None
-
-# dev/video*
-LEFT   = 2
-CENTER = 1
-RIGHT  = 0
 
 def joycb(msg):
     global ngl
@@ -28,17 +24,18 @@ def main():
 
     rospy.Subscriber(JOY_TOPIC, AckermannDriveStamped, joycb)
     
-    cap_l = cv.VideoCapture(LEFT)
+    dev.notify()
+    cap_l = cv.VideoCapture(dev.Video.LEFT)
     #cap_l.set(cv.CAP_PROP_FPS, 15)
     cap_l.set(cv.CAP_PROP_FRAME_WIDTH, 320)
     cap_l.set(cv.CAP_PROP_FRAME_HEIGHT, 240)
     
-    cap_c = cv.VideoCapture(CENTER)
+    cap_c = cv.VideoCapture(dev.Video.CENTER)
     #cap_c.set(cv.CAP_PROP_FPS, 15)
     cap_c.set(cv.CAP_PROP_FRAME_WIDTH, 320)
     cap_c.set(cv.CAP_PROP_FRAME_HEIGHT, 240)
     
-    cap_r = cv.VideoCapture(RIGHT)
+    cap_r = cv.VideoCapture(dev.Video.RIGHT)
     #cap_r.set(cv.CAP_PROP_FPS, 15)
     cap_r.set(cv.CAP_PROP_FRAME_WIDTH, 320)
     cap_r.set(cv.CAP_PROP_FRAME_HEIGHT, 240)
