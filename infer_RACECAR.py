@@ -42,7 +42,7 @@ if __name__ == "__main__":
     socket.setsockopt(zmq.SNDHWM, 1)  #  "send highwatermark" - do not queue up messages
     socket.bind("tcp://*:%s" % port)  
 
-    print(":::: USING /dev/video{} AS CENTER CAMERA ::::")
+    print(":::: USING /dev/video{} AS CENTER CAMERA ::::".format(dev.Video.CENTER))
     cap = cv.VideoCapture(dev.Video.CENTER)
     cap.set(cv.CAP_PROP_FRAME_WIDTH, 320)
     cap.set(cv.CAP_PROP_FRAME_HEIGHT, 240)
