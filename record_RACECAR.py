@@ -24,7 +24,7 @@ def main():
 
     rospy.Subscriber(JOY_TOPIC, AckermannDriveStamped, joycb)
     
-    dev.notify()
+    dev.Video.notify()
     cap_l = cv.VideoCapture(dev.Video.LEFT)
     #cap_l.set(cv.CAP_PROP_FPS, 15)
     cap_l.set(cv.CAP_PROP_FRAME_WIDTH, 320)

@@ -12,7 +12,7 @@ def label_device(msg, img):
     return img
 
 def main():
-    dev.notify()
+    dev.Video.notify()
 
     WEBCAMS = "WEBCAMS"
 
