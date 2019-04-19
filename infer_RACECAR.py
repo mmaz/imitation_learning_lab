@@ -6,6 +6,7 @@ import math
 import random
 import zmq
 import datetime
+import argparse
 from collections import deque
 
 import cameras_RACECAR as dev
@@ -19,12 +20,14 @@ sess = tf.InteractiveSession(config=config)
 
 SAVE_RUN = False
 USE_FILTER = False
-USE_FULL_FRAME = True
 
 angle_filter = deque(maxlen=5)
 
-MODEL='model_name.h5'
-model = load_model(MODEL)
+parser = argparse.ArgumentParser()
+parser.add_argument("-m", "--model", help="saved model weights (model_name.h5)")  
+args = parser.parse_args()   
+
+model = load_model(args.model)
 model._make_predict_function() # http://projectsfromtech.blogspot.com/2017/10/visual-object-recognition-in-ros-using.html
 graph = tf.get_default_graph()
 
@@ -51,7 +54,7 @@ if __name__ == "__main__":
     while True:
         ret, image = cap.read()
 
-        crop = p.preprocess(image, use_full_frame=True)
+        crop = p.preprocess(image)
         crop = np.array([crop])
         with graph.as_default():
             ngl = model.predict(crop, batch_size=1)[0,0]
