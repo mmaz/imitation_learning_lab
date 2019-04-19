@@ -7,7 +7,9 @@ import random
 import zmq
 import datetime
 from collections import deque
+
 import cameras_RACECAR as dev
+import pilotnet as p
 
 import tensorflow as tf
 from tensorflow.keras.models import load_model
@@ -25,15 +27,6 @@ MODEL='model_name.h5'
 model = load_model(MODEL)
 model._make_predict_function() # http://projectsfromtech.blogspot.com/2017/10/visual-object-recognition-in-ros-using.html
 graph = tf.get_default_graph()
-
-def pilotnet_crop(image):
-    """assumes 320x240 input, resizes to 200x66"""
-    # rows:    (240 - 66) / 2 == 87
-    # columns: (320 - 200) /2 == 60 
-    return image[87:-87, 60:-60] 
-
-def shrink(image):
-    return cv.resize(image, (200,66), cv.INTER_AREA)
 
 if __name__ == "__main__":
     port = "5556"
@@ -58,10 +51,7 @@ if __name__ == "__main__":
     while True:
         ret, image = cap.read()
 
-        if USE_FULL_FRAME:
-            crop = shrink(image)
-        else:
-            crop = pilotnet_crop(image)
+        crop = p.preprocess(image, use_full_frame=True)
         crop = np.array([crop])
         with graph.as_default():
             ngl = model.predict(crop, batch_size=1)[0,0]
