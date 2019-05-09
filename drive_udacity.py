@@ -10,6 +10,7 @@ import eventlet
 import eventlet.wsgi
 from flask import Flask
 import cv2 as cv
+import pilotnet as p
 
 from tensorflow.keras.models import load_model
 
@@ -50,7 +51,11 @@ def telemetry(sid, data):
             cv.imwrite(image_filename, image) 
         return    
         try:
-            image = utils.preprocess(image) # apply the preprocessing
+            # NOTE: you do *not* want to apply augmentation here (which introduces noise
+            # to improve the robustness of a model while training), however you *do* want 
+            # to crop or shrink the image dimensions using the same preprocessing
+            # steps you applied in training your model:
+            image = p.preprocess(image)     # crop or shrink the center camera image
             image = np.array([image])       # the model expects 4D array
 
             # predict the steering angle for the image
