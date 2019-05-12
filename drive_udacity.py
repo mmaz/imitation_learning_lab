@@ -42,14 +42,11 @@ def telemetry(sid, data):
         cv.imshow(cvwindow, image)
         cv.waitKey(1)
 
-        send_control(0, 8)
-
         # save frame
         if args.image_folder != '':
             timestamp = datetime.utcnow().strftime('%Y_%m_%d_%H_%M_%S_%f')[:-3]
             image_filename = "{}.jpg".format(os.path.join(args.image_folder, timestamp))
             cv.imwrite(image_filename, image) 
-        return    
         try:
             # NOTE: you do *not* want to apply augmentation here (which introduces noise
             # to improve the robustness of a model while training), however you *do* want 
