@@ -9,7 +9,6 @@ import datetime
 import argparse
 from collections import deque
 
-import cameras_RACECAR as dev
 import pilotnet as p
 
 import tensorflow as tf
@@ -20,7 +19,7 @@ config.gpu_options.per_process_gpu_memory_fraction = 0.25
 sess = tf.InteractiveSession(config=config)
 
 SAVE_RUN = False
-USE_FILTER = False
+USE_FILTER = True
 
 angle_filter = deque(maxlen=5)
 
@@ -33,15 +32,6 @@ model._make_predict_function()  # http://projectsfromtech.blogspot.com/2017/10/v
 graph = tf.get_default_graph()
 
 
-def recv_array(socket, flags=0, copy=True, track=False):
-    """recv a numpy array"""
-    md = socket.recv_json(flags=flags)
-    msg = socket.recv(flags=flags, copy=copy, track=track)
-    buf = memoryview(msg)
-    A = np.frombuffer(buf, dtype=md["dtype"])
-    return A.reshape(md["shape"])
-
-
 if __name__ == "__main__":
     port = "5556"
     context = zmq.Context()
@@ -52,7 +42,7 @@ if __name__ == "__main__":
     port = "5557"
     recv_socket = context.socket(zmq.SUB)  # subscriber socket
     recv_socket.setsockopt(zmq.CONFLATE, 1)  # only receive the latest message
-    recv_socket.setsockopt(zmq.SUBSCRIBE, "")  # no message filter
+    recv_socket.setsockopt_string(zmq.SUBSCRIBE, "")  # no message filter
     recv_socket.setsockopt(zmq.RCVTIMEO, 1000)  # wait 1sec before raising EAGAIN
     recv_socket.connect("tcp://127.0.0.1:%s" % port)
 
@@ -67,7 +57,7 @@ if __name__ == "__main__":
     while True:
         try:
             msg = recv_socket.recv()
-            image = recv_array(recv_socket)
+            image = np.frombuffer(msg, dtype=np.uint8).reshape(240, 320, 3)
         except zmq.Again:
             if rospy.is_shutdown():  # catches ctrlc
                 break
@@ -75,6 +65,7 @@ if __name__ == "__main__":
             continue  # try to recv again
         crop = p.preprocess(image)
         crop = np.array([crop])
+        print(crop.shape)
         with graph.as_default():
             ngl = model.predict(crop, batch_size=1)[0, 0]
 
