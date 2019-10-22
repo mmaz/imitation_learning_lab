@@ -24,7 +24,7 @@ class Recorder:
         self.joy_sub = rospy.Subscriber(JOY_TOPIC, AckermannDriveStamped, self.joycb)
 
         start = datetime.datetime.now()
-        data_folder = "record_{}".format(start.strftime("%m_%d_%H_%M"))
+        data_folder = "data_{}".format(start.strftime("%m_%d_%H_%M"))
         os.mkdir(data_folder)
         os.chdir(data_folder)
         self.csv_fn = "{}.csv".format(data_folder)
