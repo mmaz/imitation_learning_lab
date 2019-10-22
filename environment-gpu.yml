@@ -7,8 +7,10 @@ dependencies:
     - h5py
     - flask-socketio
     - scikit-learn
-    - tensorflow-gpu
-    #- keras
+    - tensorflow-gpu=1.14
+    - black
+    - pylint
+    - pip
     - pip:
         - eventlet
         - opencv-python

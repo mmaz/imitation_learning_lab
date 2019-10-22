@@ -1,9 +1,13 @@
 class Video:
     # dev/video*
-    LEFT = 1
-    CENTER = 2
-    RIGHT = 0
+    LEFT = 0
+    RIGHT = 1
 
     @classmethod
     def notify(cls):
-        print(":::: USING LEFT=/dev/video{}, CENTER=/dev/video{}, RIGHT=/dev/video{} ::::".format(cls.LEFT, cls.CENTER, cls.RIGHT))
+        print(
+            ":::: Camera IDs: LEFT=/dev/video{}, RIGHT=/dev/video{} ::::".format(
+                cls.LEFT, cls.RIGHT
+            )
+        )
+
