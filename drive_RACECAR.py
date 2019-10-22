@@ -30,7 +30,7 @@ if __name__ == "__main__":
         print(ngl)
         command = AckermannDriveStamped()
         command.drive.steering_angle = ngl
-        command.drive.speed = 3000
+        command.drive.speed = 1.0
         commandPub.publish(command)
         if rospy.is_shutdown():
             break

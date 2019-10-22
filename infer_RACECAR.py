@@ -57,15 +57,12 @@ if __name__ == "__main__":
     while True:
         try:
             msg = recv_socket.recv()
-            image = np.frombuffer(msg, dtype=np.uint8).reshape(240, 320, 3)
+            image = np.frombuffer(msg, dtype=np.uint8).reshape(240,320,3)
         except zmq.Again:
-            if rospy.is_shutdown():  # catches ctrlc
-                break
             print("no msg")
             continue  # try to recv again
         crop = p.preprocess(image)
         crop = np.array([crop])
-        print(crop.shape)
         with graph.as_default():
             ngl = model.predict(crop, batch_size=1)[0, 0]
 

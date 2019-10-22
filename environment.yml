@@ -7,7 +7,7 @@ dependencies:
     - h5py
     - flask-socketio
     - scikit-learn
-    - tensorflow=1.13.1
+    - tensorflow=1.10
     - black
     - pylint
     - pip
