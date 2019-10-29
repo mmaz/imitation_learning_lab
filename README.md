@@ -1,5 +1,4 @@
 # Imitation Learning Lab
 
-Lab handout: http://markmaz.com/neet/imitation_learning/
+Lab handout: <http://markmaz.com/racecar_fall19>. The handout includes a list of sources and repositories which this lab is built upon.
 
-The Udacity simulator support, particularly `drive_udacity.py`, is forked from [naokishibuya/car-behavioral-cloning](https://github.com/naokishibuya/car-behavioral-cloning/). The dependencies and Keras model definition have been updated.
