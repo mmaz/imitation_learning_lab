@@ -7,7 +7,7 @@ dependencies:
     - h5py
     - flask-socketio
     - scikit-learn
-    - tensorflow-gpu=1.10
+    - tensorflow-gpu=1.13.1
     - black
     - pylint
     - pip
